@@ -312,4 +312,10 @@ switch (ENVIRONMENT)
  *
  * And away we go...
  */
+ //require FCPATH . 'vendor/autoload.php';
+
+// $dotenv = Dotenv\Dotenv::createMutable(FCPATH);
+// $dotenv->load(); 
 require_once BASEPATH.'core/CodeIgniter.php';
+
+// log_message("info", $_ENV['FOO']);

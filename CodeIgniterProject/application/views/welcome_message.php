@@ -72,6 +72,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	<div id="body">
 		<p>Hello <?php echo ("$name $surname") ?></p>
+		<p> <?php echo("$foo") ?></p>
+		<p> <?php echo($_ENV["FOO"]) ?></p>
 		<p>The page you are looking at is being generated dynamically by CodeIgniter.</p>
 
 		<p>If you would like to edit this page you'll find it located at:</p>

@@ -20,7 +20,7 @@ class Welcome extends CI_Controller {
 	 */
 	public function index()
 	{
-		$data = array("name"=>"Andrea", "surname" => "Bisognin");
+		$data = array("name"=>"Andrea", "surname" => "Bisognin", "foo"=> $_ENV["FOO"] );
 		$this->load->view('welcome_message', $data);
 	}
 }

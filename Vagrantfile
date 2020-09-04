@@ -65,8 +65,12 @@ Vagrant.configure("2") do |config|
   # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
   # documentation for more information about their specific syntax and use.
    config.vm.provision "shell", inline: <<-SHELL
+    echo iptables-persistent iptables-persistent/autosave_v4 boolean true | sudo debconf-set-selections
+    echo iptables-persistent iptables-persistent/autosave_v6 boolean false | sudo debconf-set-selections
     apt-get update
-    apt-get install -y php nginx git vim mysql-server-5.7 php7.2-fpm php-mysql 
+    apt-get install -y --force-yes php nginx git vim mysql-server-5.7 php7.2-fpm php-mysql iptables-persistent
+    sudo cp /vagrant/rules.v4 /etc/iptables/rules.v4
+    iptables-restore < /etc/iptables/rules.v4
     sudo cp /vagrant/codeigniter.conf /etc/php/7.2/fpm/pool.d/ 
     sudo cp /vagrant/codeigniter  /etc/nginx/sites-available/
     sudo ln -s /etc/nginx/sites-available/codeigniter /etc/nginx/sites-enabled/
@@ -78,5 +82,6 @@ Vagrant.configure("2") do |config|
     sudo cp /vagrant/mysqld.cnf  /etc/mysql/mysql.conf.d/
     sudo systemctl restart mysql
     sudo mysql -u root < /vagrant/database.sql
+    
    SHELL
 end

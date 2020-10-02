@@ -10,9 +10,9 @@
 -A OUTPUT -p tcp -m tcp --sport 22 -j ACCEPT
 -A OUTPUT -p tcp -m tcp --sport 80 -j ACCEPT
 -A OUTPUT -d localhost -m tcp  -p tcp -j ACCEPT
--A OUTPUT -d 18.232.247.199 -m tcp -p tcp -j ACCEPT
--A OUTPUT -d 3.227.91.109 -m tcp -p tcp -j ACCEPT
--A OUTPUT -d 34.192.182.255 -m tcp -p tcp -j ACCEPT
+#for $ip in $ips
+-A OUTPUT -d $ip -m tcp -p tcp -j ACCEPT
+#end for
 -A OUTPUT -j LOG
 -A OUTPUT -j DROP
 COMMIT

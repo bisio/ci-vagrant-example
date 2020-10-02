@@ -49,11 +49,11 @@ Vagrant.configure("2") do |config|
    #Provider-specific configuration so you can fine-tune various
    #backing providers for Vagrant. These expose provider-specific options.
    #Example for VirtualBox:
-  
+
    config.vm.provider "virtualbox" do |vb|
      # Display the VirtualBox GUI when booting the machine
      vb.gui = false
-  
+
      # Customize the amount of memory on the VM:
      vb.memory = "2048"
    end
@@ -65,23 +65,38 @@ Vagrant.configure("2") do |config|
   # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
   # documentation for more information about their specific syntax and use.
    config.vm.provision "shell", inline: <<-SHELL
+    # Iptables
     echo iptables-persistent iptables-persistent/autosave_v4 boolean true | sudo debconf-set-selections
     echo iptables-persistent iptables-persistent/autosave_v6 boolean false | sudo debconf-set-selections
+    # In Ubuntu 18.04 will instalt php7.2
+    # php-apcu to cache dotenv file
     apt-get update
-    apt-get install -y --force-yes php nginx git vim mysql-server-5.7 php7.2-fpm php-mysql iptables-persistent
-    sudo cp /vagrant/rules.v4 /etc/iptables/rules.v4
-    iptables-restore < /etc/iptables/rules.v4
-    sudo cp /vagrant/codeigniter.conf /etc/php/7.2/fpm/pool.d/ 
+    apt-get install -y --force-yes php nginx git vim mysql-server-5.7 composer \
+    php7.2-fpm php7.2-xml php-mysql php-apcu \
+    iptables-persistent
+    # Python to update iptables rules
+    sudo apt-get install -y python2.7 python-cheetah ipython
+    python update-rules.py
+    # sudo cp /vagrant/rules.v4 /etc/iptables/rules.v4
+    sudo iptables-restore <  /vagrant/rules.v4
+    # Install codeigniter
+    cd /vagrant/CodeIgniterProject
+    composer install
+    # Configure php-fpm
+    sudo cp /vagrant/codeigniter.conf /etc/php/7.2/fpm/pool.d/
+    sudo rm -f /etc/php/7.2/fpm/pool.d/www.conf
+    # Configure Nginx
     sudo cp /vagrant/codeigniter  /etc/nginx/sites-available/
     sudo ln -s /etc/nginx/sites-available/codeigniter /etc/nginx/sites-enabled/
     sudo rm -f /etc/nginx/sites-enabled/default
-    sudo rm -f /etc/php/7.2/fpm/pool.d/www.conf
-    sudo systemctl enable php7.2-fpm 
+    sudo systemctl enable php7.2-fpm
     sudo systemctl restart php7.2-fpm
     sudo systemctl restart nginx
+    # Configure mysql
     sudo cp /vagrant/mysqld.cnf  /etc/mysql/mysql.conf.d/
     sudo systemctl restart mysql
+    # Create database
     sudo mysql -u root < /vagrant/database.sql
-    
+
    SHELL
 end
